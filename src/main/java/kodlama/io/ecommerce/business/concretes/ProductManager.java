@@ -1,44 +1,46 @@
 package kodlama.io.ecommerce.business.concretes;
 
 import kodlama.io.ecommerce.business.abstracts.ProductService;
-import kodlama.io.ecommerce.entities.concretes.Product;
-import kodlama.io.ecommerce.repository.abstracts.ProductRepository;
+import kodlama.io.ecommerce.entities.Product;
+import kodlama.io.ecommerce.repository.ProductRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ProductManager implements ProductService {
-    private ProductRepository repository;
-
-    public ProductManager(ProductRepository repository) {
-        this.repository = repository;
-    }
+    private final ProductRepository repository;
 
     @Override
     public Product add(Product product) {
         validateProduct(product);
-        return repository.add(product);
+        return repository.save(product);
     }
     @Override
     public void delete(int id) {
-        repository.delete(id);
+        checkIfProductExists(id);
+        repository.deleteById(id);
     }
 
     @Override
     public Product update(int id, Product product) {
         validateProduct(product);
-        return repository.update(id, product);
+        checkIfProductExists(id);
+        product.setId(id);
+        return repository.save(product);
     }
 
     @Override
     public List<Product> getAll() {
-        return repository.getAll();
+        return repository.findAll();
     }
 
     @Override
     public Product getById(int id) {
-        return repository.getById(id);
+        checkIfProductExists(id);
+        return repository.findById(id).orElseThrow();
     }
 
     // iş kuralları - business rules
@@ -62,5 +64,8 @@ public class ProductManager implements ProductService {
         if (product.getDescription().length() < 10 || product.getDescription().length() > 50) {
             throw new IllegalArgumentException("Ürünlerin description(açıklama) alanı min 10 karakter max 50 karakter olmalıdır.");
         }
+    }
+    private void checkIfProductExists(int id){
+        if (!repository.existsById(id)) throw new RuntimeException("ürün bulunamadı.");
     }
 }
