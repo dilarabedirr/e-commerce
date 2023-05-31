@@ -7,6 +7,7 @@ import kodlama.io.ecommerce.business.dto.responses.create.CreateProductResponse;
 import kodlama.io.ecommerce.business.dto.responses.get.product.GetAllProductsResponse;
 import kodlama.io.ecommerce.business.dto.responses.get.product.GetProductResponse;
 import kodlama.io.ecommerce.business.dto.responses.update.UpdateProductResponse;
+import kodlama.io.ecommerce.business.rules.ProductBusinessRules;
 import kodlama.io.ecommerce.common.utils.dtoConverter.DtoConverterService;
 import kodlama.io.ecommerce.entities.Product;
 import kodlama.io.ecommerce.repository.ProductRepository;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ProductManager implements ProductService {
     private final ProductRepository repository;
     private final DtoConverterService dtoConverter;
+    private final ProductBusinessRules rules;
 
     @Override
     public List<GetAllProductsResponse> getAll() {
@@ -30,8 +32,17 @@ public class ProductManager implements ProductService {
 
     @Override
     public GetProductResponse getById(int id) {
+        rules.checkIfProductExists(id);
         var product = repository.findById(id).orElseThrow();
         var response = dtoConverter.toDto(product, GetProductResponse.class);
+        return response;
+    }
+
+    @Override
+    public GetProductResponse getByName(String name) {
+        rules.checkIfProductExistsByName(name);
+        var product = repository.findByName(name);
+        var response = dtoConverter.toDto(product,GetProductResponse.class);
         return response;
     }
 
@@ -46,6 +57,7 @@ public class ProductManager implements ProductService {
 
     @Override
     public UpdateProductResponse update(int id, UpdateProductRequest request) {
+        rules.checkIfProductExists(id);
         var product = dtoConverter.toEntity(request, Product.class);
         product.setId(id);
         repository.save(product);
@@ -55,6 +67,7 @@ public class ProductManager implements ProductService {
 
     @Override
     public void delete(int id) {
+        rules.checkIfProductExists(id);
         repository.deleteById(id);
     }
 }

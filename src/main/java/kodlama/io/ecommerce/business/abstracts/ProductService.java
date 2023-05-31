@@ -12,6 +12,7 @@ import java.util.List;
 public interface ProductService {
     List<GetAllProductsResponse> getAll();
     GetProductResponse getById(int id);
+    GetProductResponse getByName(String name);
     CreateProductResponse add(CreateProductRequest request);
     UpdateProductResponse update(int id, UpdateProductRequest request);
     void delete(int id);

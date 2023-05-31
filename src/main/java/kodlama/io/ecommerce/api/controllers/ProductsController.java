@@ -1,5 +1,6 @@
 package kodlama.io.ecommerce.api.controllers;
 
+import jakarta.validation.Valid;
 import kodlama.io.ecommerce.business.abstracts.ProductService;
 import kodlama.io.ecommerce.business.dto.requests.create.CreateProductRequest;
 import kodlama.io.ecommerce.business.dto.requests.update.UpdateProductRequest;
@@ -29,14 +30,19 @@ public class ProductsController {
         return service.getById(id);
     }
 
+    @GetMapping("/{name}")
+    public GetProductResponse getByName(@RequestParam String name) {
+        return service.getByName(name);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateProductResponse add(@RequestBody CreateProductRequest request) {
+    public CreateProductResponse add(@Valid @RequestBody CreateProductRequest request) {
         return service.add(request);
     }
 
     @PutMapping("/{id}")
-    public UpdateProductResponse update(@PathVariable int id, @RequestBody UpdateProductRequest request) {
+    public UpdateProductResponse update(@PathVariable int id, @Valid @RequestBody UpdateProductRequest request) {
         return service.update(id, request);
     }
 
