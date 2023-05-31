@@ -39,15 +39,8 @@ public class ProductManager implements ProductService {
     }
 
     @Override
-    public GetProductResponse getByName(String name) {
-        rules.checkIfProductExistsByName(name);
-        var product = repository.findByName(name);
-        var response = dtoConverter.toDto(product,GetProductResponse.class);
-        return response;
-    }
-
-    @Override
     public CreateProductResponse add(CreateProductRequest request) {
+        rules.checkIfProductExistsByName(request.getName());
         var product = dtoConverter.toEntity(request, Product.class);
         product.setId(0);
         repository.save(product);

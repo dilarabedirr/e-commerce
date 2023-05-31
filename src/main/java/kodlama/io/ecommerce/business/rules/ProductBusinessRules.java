@@ -18,7 +18,8 @@ public class ProductBusinessRules {
     }
 
     public void checkIfProductExistsByName(String name){
-        if (!repository.existsByNameIgnoreCase(name)){
+        if (repository.existsByNameIgnoreCase(name)){
+            throw new BusinessException(Messages.Product.Exists);
         }
     }
 }

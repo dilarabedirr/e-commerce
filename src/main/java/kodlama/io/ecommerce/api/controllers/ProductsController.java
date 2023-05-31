@@ -30,11 +30,6 @@ public class ProductsController {
         return service.getById(id);
     }
 
-    @GetMapping("/{name}")
-    public GetProductResponse getByName(@RequestParam String name) {
-        return service.getByName(name);
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CreateProductResponse add(@Valid @RequestBody CreateProductRequest request) {
