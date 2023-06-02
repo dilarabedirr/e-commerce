@@ -1,10 +1,13 @@
 package kodlama.io.ecommerce.business.dto.responses.get.product;
 
 import kodlama.io.ecommerce.business.dto.BaseDto;
+import kodlama.io.ecommerce.business.dto.responses.CategoryResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,4 +19,5 @@ public class GetProductResponse implements BaseDto {
     private int quantity;
     private double price;
     private String description;
+    private Set<CategoryResponse> categories;
 }

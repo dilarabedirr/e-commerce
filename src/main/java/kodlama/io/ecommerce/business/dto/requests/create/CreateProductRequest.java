@@ -8,11 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateProductRequest implements BaseDto {
+    private Set<Integer> categoryIds;
     @NotBlank
     private String name;
     @Min(1)
