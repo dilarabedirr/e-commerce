@@ -10,4 +10,9 @@ public class Messages {
         public static final String NotExists = "CATEGORY_NOT_EXISTS";
         public static final String Exists = "CATEGORY_ALREADY_EXISTS";
     }
+
+    public static class Sale {
+        public static final String NotExists = "SALE_NOT_EXISTS";
+        public static final String Exists = "SALE_ALREADY_EXISTS";
+    }
 }

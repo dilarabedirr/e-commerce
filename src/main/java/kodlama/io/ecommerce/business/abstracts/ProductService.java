@@ -1,5 +1,6 @@
 package kodlama.io.ecommerce.business.abstracts;
 
+import kodlama.io.ecommerce.business.dto.CreateProductSaleRequest;
 import kodlama.io.ecommerce.business.dto.requests.create.CreateProductRequest;
 import kodlama.io.ecommerce.business.dto.requests.update.UpdateProductRequest;
 import kodlama.io.ecommerce.business.dto.responses.create.CreateProductResponse;
@@ -17,4 +18,6 @@ public interface ProductService {
     UpdateProductResponse update(int id, UpdateProductRequest request);
     void changeProductState(int productId, State state);
     void delete(int id);
+
+    void processProductSale(CreateProductSaleRequest request);
 }

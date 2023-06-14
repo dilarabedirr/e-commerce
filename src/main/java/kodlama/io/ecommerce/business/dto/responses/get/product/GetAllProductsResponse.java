@@ -21,5 +21,5 @@ public class GetAllProductsResponse implements BaseDto {
     private double price;
     private String description;
     private State state;
-    private Set<CategoryResponse> categoryIds;
+    private Set<CategoryResponse> categories;
 }

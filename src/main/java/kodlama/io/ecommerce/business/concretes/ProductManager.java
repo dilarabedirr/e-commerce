@@ -2,6 +2,7 @@ package kodlama.io.ecommerce.business.concretes;
 
 import kodlama.io.ecommerce.business.abstracts.CategoryService;
 import kodlama.io.ecommerce.business.abstracts.ProductService;
+import kodlama.io.ecommerce.business.dto.CreateProductSaleRequest;
 import kodlama.io.ecommerce.business.dto.requests.create.CreateProductRequest;
 import kodlama.io.ecommerce.business.dto.requests.update.UpdateProductRequest;
 import kodlama.io.ecommerce.business.dto.responses.create.CreateProductResponse;
@@ -76,6 +77,13 @@ public class ProductManager implements ProductService {
     public void delete(int id) {
         rules.checkIfProductExists(id);
         repository.deleteById(id);
+    }
+
+    @Override
+    public void processProductSale(CreateProductSaleRequest request) {
+        var product = repository.findById(request.getProductId()).orElseThrow();
+        product.setQuantity(product.getQuantity()- request.getQuantity());
+        repository.save(product);
     }
 
     private void setCategoryToProduct(Set<Integer> categoryIds, Product product) {
