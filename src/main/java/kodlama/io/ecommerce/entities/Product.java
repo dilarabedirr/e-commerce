@@ -1,6 +1,7 @@
 package kodlama.io.ecommerce.entities;
 
 import jakarta.persistence.*;
+import kodlama.io.ecommerce.entities.enums.State;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,8 @@ public class Product implements BaseEntity {
     private String name;
     private int quantity;
     private double price;
+    @Enumerated(EnumType.STRING)
+    private State state;
     private String description;
 
     @ManyToMany

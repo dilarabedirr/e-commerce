@@ -8,6 +8,7 @@ import kodlama.io.ecommerce.business.dto.responses.create.CreateProductResponse;
 import kodlama.io.ecommerce.business.dto.responses.get.product.GetAllProductsResponse;
 import kodlama.io.ecommerce.business.dto.responses.get.product.GetProductResponse;
 import kodlama.io.ecommerce.business.dto.responses.update.UpdateProductResponse;
+import kodlama.io.ecommerce.entities.enums.State;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,8 @@ public class ProductsController {
     private final ProductService service;
 
     @GetMapping
-    public List<GetAllProductsResponse> getAll() {
-        return service.getAll();
+    public List<GetAllProductsResponse> getAll(@RequestParam(defaultValue = "true") boolean state) {
+        return service.getAll(state);
     }
 
     @GetMapping("/{id}")
@@ -39,6 +40,11 @@ public class ProductsController {
     @PutMapping("/{id}")
     public UpdateProductResponse update(@PathVariable int id, @Valid @RequestBody UpdateProductRequest request) {
         return service.update(id, request);
+    }
+
+    @PutMapping
+    public void changeProductState(@RequestParam int productId, State state) {
+        service.changeProductState(productId, state);
     }
 
     @DeleteMapping("/{id}")

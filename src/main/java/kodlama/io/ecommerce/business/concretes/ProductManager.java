@@ -12,6 +12,7 @@ import kodlama.io.ecommerce.business.rules.ProductBusinessRules;
 import kodlama.io.ecommerce.common.utils.dtoConverter.DtoConverterService;
 import kodlama.io.ecommerce.entities.Category;
 import kodlama.io.ecommerce.entities.Product;
+import kodlama.io.ecommerce.entities.enums.State;
 import kodlama.io.ecommerce.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,8 @@ public class ProductManager implements ProductService {
     private final CategoryService categoryService;
 
     @Override
-    public List<GetAllProductsResponse> getAll() {
-        var products = repository.findAll();
+    public List<GetAllProductsResponse> getAll(boolean includePassive) {
+        var products = filterProductsByPassiveState(includePassive);
         var response = dtoConverter.toListDto(products, GetAllProductsResponse.class);
         return response;
     }
@@ -65,6 +66,13 @@ public class ProductManager implements ProductService {
     }
 
     @Override
+    public void changeProductState(int productId, State state){
+        var product =repository.findById(productId).orElseThrow();
+        product.setState(state);
+        repository.save(product);
+    }
+
+    @Override
     public void delete(int id) {
         rules.checkIfProductExists(id);
         repository.deleteById(id);
@@ -74,5 +82,12 @@ public class ProductManager implements ProductService {
         categoryIds.stream().forEach(categoryId -> {
             product.getCategories().add(dtoConverter.toEntity(categoryService.getById(categoryId), Category.class));
         });
+    }
+
+    private List<Product> filterProductsByPassiveState(boolean includePassive){
+        if (includePassive){
+            return repository.findAll();
+        }
+        return repository.findAllByStateIsNot(State.PASSIVE);
     }
 }
