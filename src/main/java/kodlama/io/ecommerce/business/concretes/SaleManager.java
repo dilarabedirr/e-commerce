@@ -1,8 +1,10 @@
 package kodlama.io.ecommerce.business.concretes;
 
+import kodlama.io.ecommerce.business.abstracts.InvoiceService;
 import kodlama.io.ecommerce.business.abstracts.PaymentService;
 import kodlama.io.ecommerce.business.abstracts.ProductService;
 import kodlama.io.ecommerce.business.abstracts.SaleService;
+import kodlama.io.ecommerce.business.dto.requests.create.CreateInvoiceRequest;
 import kodlama.io.ecommerce.business.dto.requests.create.CreateSaleRequest;
 import kodlama.io.ecommerce.business.dto.requests.update.UpdateSaleRequest;
 import kodlama.io.ecommerce.business.dto.responses.create.CreateSaleResponse;
@@ -34,6 +36,7 @@ public class SaleManager implements SaleService {
     private final SaleBusinessRules rules;
     private final PaymentService paymentService;
     private final ModelMapper mapper;
+    private final InvoiceService invoiceService;
 
 
     @Override
@@ -62,6 +65,11 @@ public class SaleManager implements SaleService {
         repository.save(sale);
 
         processProductSale(sale);
+
+        CreateInvoiceRequest invoiceRequest = new CreateInvoiceRequest();
+        createInvoiceRequest(request, invoiceRequest, sale);
+        invoiceService.add(invoiceRequest);
+
 
         return dtoConverterService.toDto(sale, CreateSaleResponse.class);
     }
@@ -100,6 +108,16 @@ public class SaleManager implements SaleService {
         CreateSalePaymentRequest salePaymentRequest = mapper.map(request.getPaymentRequest(), CreateSalePaymentRequest.class);
         salePaymentRequest.setPrice(sale.getTotalPrice());
         paymentService.processSalePayment(salePaymentRequest);
+    }
+
+    private void createInvoiceRequest(CreateSaleRequest request, CreateInvoiceRequest invoiceRequest, Sale sale) {
+        var product = productService.getById(request.getProductId());
+
+        invoiceRequest.setCardHolder(request.getPaymentRequest().getCardHolder());
+        invoiceRequest.setProductName(product.getName());
+        invoiceRequest.setQuantity(request.getQuantity());
+        invoiceRequest.setPrice(request.getPrice());
+        invoiceRequest.setTotalPrice(getTotalPrice(sale));
     }
 
     private void checkIfProductIsActive(int productId) {

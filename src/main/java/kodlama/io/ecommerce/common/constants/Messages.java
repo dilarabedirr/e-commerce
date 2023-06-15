@@ -25,4 +25,8 @@ public class Messages {
         public static final String NotAValidPayment = "NOT_A_VALID_PAYMENT";
         public static final String Failed = "PAYMENT_FAILED";
     }
+
+    public static class Invoice {
+        public static final String NotFound = "INVOICE_NOT_FOUND";
+    }
 }
