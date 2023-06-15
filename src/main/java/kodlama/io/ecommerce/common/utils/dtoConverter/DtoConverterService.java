@@ -1,6 +1,6 @@
 package kodlama.io.ecommerce.common.utils.dtoConverter;
 
-import kodlama.io.ecommerce.business.dto.BaseDto;
+import kodlama.io.ecommerce.common.dto.BaseDto;
 import kodlama.io.ecommerce.entities.BaseEntity;
 
 import java.util.List;

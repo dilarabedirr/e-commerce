@@ -6,17 +6,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateSaleResponse implements BaseDto {
+public class CreatePaymentResponse implements BaseDto {
     private int id;
-    private int productId;
-    private int quantity;
-    private double price;
-    private double totalPrice;
-    private LocalDateTime dateTime;
+    private String cardNumber;
+    private String cardHolder;
+    private int cardExpirationYear;
+    private int cardExpirationMonth;
+    private String cardCvv;
+    private double balance;
 }

@@ -1,20 +1,17 @@
 package kodlama.io.ecommerce.business.dto.requests.create;
 
+import jakarta.validation.constraints.Min;
 import kodlama.io.ecommerce.business.dto.requests.PaymentRequest;
-import kodlama.io.ecommerce.common.dto.BaseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
-public class CreateSaleRequest implements BaseDto {
-    private int productId;
-    private int quantity;
-    private double price;
-
-    private PaymentRequest paymentRequest;
+@AllArgsConstructor
+public class CreatePaymentRequest extends PaymentRequest{
+    @Min(value = 1)
+    private double balance;
 }

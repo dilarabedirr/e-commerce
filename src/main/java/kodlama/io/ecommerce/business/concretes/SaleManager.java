@@ -1,8 +1,9 @@
 package kodlama.io.ecommerce.business.concretes;
 
+import kodlama.io.ecommerce.business.abstracts.PaymentService;
 import kodlama.io.ecommerce.business.abstracts.ProductService;
 import kodlama.io.ecommerce.business.abstracts.SaleService;
-import kodlama.io.ecommerce.business.dto.CreateProductSaleRequest;
+import kodlama.io.ecommerce.common.dto.CreateProductSaleRequest;
 import kodlama.io.ecommerce.business.dto.requests.create.CreateSaleRequest;
 import kodlama.io.ecommerce.business.dto.requests.update.UpdateSaleRequest;
 import kodlama.io.ecommerce.business.dto.responses.create.CreateSaleResponse;
@@ -10,6 +11,7 @@ import kodlama.io.ecommerce.business.dto.responses.get.sale.GetAllSalesResponse;
 import kodlama.io.ecommerce.business.dto.responses.get.sale.GetSaleResponse;
 import kodlama.io.ecommerce.business.dto.responses.update.UpdateSaleResponse;
 import kodlama.io.ecommerce.business.rules.SaleBusinessRules;
+import kodlama.io.ecommerce.common.dto.CreateSalePaymentRequest;
 import kodlama.io.ecommerce.common.utils.dtoConverter.DtoConverterService;
 import kodlama.io.ecommerce.entities.Sale;
 import kodlama.io.ecommerce.repository.SaleRepository;
@@ -26,6 +28,7 @@ public class SaleManager implements SaleService {
     private final DtoConverterService dtoConverterService;
     private final ProductService productService;
     private final SaleBusinessRules rules;
+    private final PaymentService paymentService;
 
 
     @Override
@@ -50,6 +53,7 @@ public class SaleManager implements SaleService {
         sale.setTotalPrice(getTotalPrice(sale));
         repository.save(sale);
 
+        processSalePayment(request, sale);
         processProductSale(sale);
 
         return dtoConverterService.toDto(sale, CreateSaleResponse.class);
@@ -83,5 +87,16 @@ public class SaleManager implements SaleService {
         productSaleRequest.setQuantity(sale.getQuantity());
 
         productService.processProductSale(productSaleRequest);
+    }
+
+    private void processSalePayment(CreateSaleRequest request, Sale sale) {
+        CreateSalePaymentRequest salePaymentRequest = new CreateSalePaymentRequest();
+        salePaymentRequest.setCardNumber(request.getPaymentRequest().getCardNumber());
+        salePaymentRequest.setCardHolder(request.getPaymentRequest().getCardHolder());
+        salePaymentRequest.setCardExpirationYear(request.getPaymentRequest().getCardExpirationYear());
+        salePaymentRequest.setCardExpirationMonth(request.getPaymentRequest().getCardExpirationMonth());
+        salePaymentRequest.setCardCvv(request.getPaymentRequest().getCardCvv());
+        salePaymentRequest.setPrice(sale.getTotalPrice());
+        paymentService.processSalePayment(salePaymentRequest);
     }
 }

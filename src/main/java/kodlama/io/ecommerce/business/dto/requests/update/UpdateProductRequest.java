@@ -2,7 +2,7 @@ package kodlama.io.ecommerce.business.dto.requests.update;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import kodlama.io.ecommerce.business.dto.BaseDto;
+import kodlama.io.ecommerce.common.dto.BaseDto;
 import kodlama.io.ecommerce.entities.enums.State;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

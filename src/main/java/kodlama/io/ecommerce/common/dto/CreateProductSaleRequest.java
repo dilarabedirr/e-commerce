@@ -1,4 +1,4 @@
-package kodlama.io.ecommerce.business.dto;
+package kodlama.io.ecommerce.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateProductSaleRequest implements BaseDto{
+public class CreateProductSaleRequest implements BaseDto {
     private int productId;
     private int quantity;
 }
