@@ -4,6 +4,8 @@ public class Messages {
     public static class Product {
         public static final String NotExists = "PRODUCT_NOT_EXISTS";
         public static final String Exists = "PRODUCT_ALREADY_EXISTS";
+        public static final String ProductPassive = "PRODUCT_IS_PASSIVE";
+        public static final String NotEnoughQuantity="NOT_ENOUGH_QUANTITY";
     }
 
     public static class Category {

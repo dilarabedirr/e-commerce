@@ -3,7 +3,6 @@ package kodlama.io.ecommerce.business.concretes;
 import kodlama.io.ecommerce.business.abstracts.PaymentService;
 import kodlama.io.ecommerce.business.abstracts.ProductService;
 import kodlama.io.ecommerce.business.abstracts.SaleService;
-import kodlama.io.ecommerce.common.dto.CreateProductSaleRequest;
 import kodlama.io.ecommerce.business.dto.requests.create.CreateSaleRequest;
 import kodlama.io.ecommerce.business.dto.requests.update.UpdateSaleRequest;
 import kodlama.io.ecommerce.business.dto.responses.create.CreateSaleResponse;
@@ -11,11 +10,16 @@ import kodlama.io.ecommerce.business.dto.responses.get.sale.GetAllSalesResponse;
 import kodlama.io.ecommerce.business.dto.responses.get.sale.GetSaleResponse;
 import kodlama.io.ecommerce.business.dto.responses.update.UpdateSaleResponse;
 import kodlama.io.ecommerce.business.rules.SaleBusinessRules;
+import kodlama.io.ecommerce.common.constants.Messages;
+import kodlama.io.ecommerce.common.dto.CreateProductSaleRequest;
 import kodlama.io.ecommerce.common.dto.CreateSalePaymentRequest;
 import kodlama.io.ecommerce.common.utils.dtoConverter.DtoConverterService;
+import kodlama.io.ecommerce.core.exceptions.BusinessException;
 import kodlama.io.ecommerce.entities.Sale;
+import kodlama.io.ecommerce.entities.enums.State;
 import kodlama.io.ecommerce.repository.SaleRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,6 +33,7 @@ public class SaleManager implements SaleService {
     private final ProductService productService;
     private final SaleBusinessRules rules;
     private final PaymentService paymentService;
+    private final ModelMapper mapper;
 
 
     @Override
@@ -47,13 +52,15 @@ public class SaleManager implements SaleService {
 
     @Override
     public CreateSaleResponse add(CreateSaleRequest request) {
+        checkIfProductIsActive(request.getProductId());
+        checkIfProductQuantity(request.getProductId(), request.getQuantity());
         var sale = dtoConverterService.toEntity(request, Sale.class);
         sale.setId(0);
         sale.setDateTime(LocalDateTime.now());
         sale.setTotalPrice(getTotalPrice(sale));
+        processSalePayment(request, sale);
         repository.save(sale);
 
-        processSalePayment(request, sale);
         processProductSale(sale);
 
         return dtoConverterService.toDto(sale, CreateSaleResponse.class);
@@ -90,13 +97,22 @@ public class SaleManager implements SaleService {
     }
 
     private void processSalePayment(CreateSaleRequest request, Sale sale) {
-        CreateSalePaymentRequest salePaymentRequest = new CreateSalePaymentRequest();
-        salePaymentRequest.setCardNumber(request.getPaymentRequest().getCardNumber());
-        salePaymentRequest.setCardHolder(request.getPaymentRequest().getCardHolder());
-        salePaymentRequest.setCardExpirationYear(request.getPaymentRequest().getCardExpirationYear());
-        salePaymentRequest.setCardExpirationMonth(request.getPaymentRequest().getCardExpirationMonth());
-        salePaymentRequest.setCardCvv(request.getPaymentRequest().getCardCvv());
+        CreateSalePaymentRequest salePaymentRequest = mapper.map(request.getPaymentRequest(), CreateSalePaymentRequest.class);
         salePaymentRequest.setPrice(sale.getTotalPrice());
         paymentService.processSalePayment(salePaymentRequest);
+    }
+
+    private void checkIfProductIsActive(int productId) {
+        var product = productService.getById(productId);
+        if (product.getState().equals(State.PASSIVE)) {
+            throw new BusinessException(Messages.Product.ProductPassive);
+        }
+    }
+
+    private void checkIfProductQuantity(int productId, int quantity) {
+        var product = productService.getById(productId);
+        if (product.getQuantity() < quantity) {
+            throw new BusinessException(Messages.Product.NotEnoughQuantity);
+        }
     }
 }
